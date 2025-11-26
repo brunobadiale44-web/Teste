@@ -12,6 +12,7 @@
         "build": {
           "builder": "@angular/build:application",
           "options": {
+            "baseHref": "/Teste/",
             "outputPath": {
               "base": "./dist",
               "browser": "."
