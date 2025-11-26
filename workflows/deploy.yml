@@ -1,0 +1,62 @@
+# .github/workflows/deploy.yml
+
+name: Deploy Angular App to GitHub Pages
+
+on:
+  # Roda quando um push é feito para a branch `main`
+  push:
+    branches: [ "main" ]
+  # Permite que você rode este workflow manualmente pela aba Actions
+  workflow_dispatch:
+
+# Permissões para o GITHUB_TOKEN para permitir o deploy no GitHub Pages
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Permite apenas um deploy concorrente, cancelando os jobs antigos
+concurrency:
+  group: "pages"
+  cancel-in-progress: true
+
+jobs:
+  # Job de build
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build project
+        # O Angular CLI gera os arquivos na pasta 'dist/<project-name>'
+        # Precisamos mover para 'dist' para o passo de upload
+        run: |
+          npm run build -- --configuration production
+          mv dist/*/* dist/
+      
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
+
+  # Job de deploy
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
