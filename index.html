@@ -1,9 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <title>Service Connection Visualizer</title>
+    <base href="/Teste/">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -13,9 +13,40 @@
         height: 100%;
         margin: 0;
         font-family: 'Inter', sans-serif;
-        background-color: #111827; /* bg-gray-900 */
+        background-color: #030712; /* bg-gray-950 */
       }
       @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap');
+
+      .grid-background {
+        background-color: #030712;
+        background-image:
+          linear-gradient(rgba(209, 213, 219, 0.07) 1px, transparent 1px),
+          linear-gradient(to right, rgba(209, 213, 219, 0.07) 1px, transparent 1px);
+        background-size: 40px 40px;
+        animation: pan-background 60s linear infinite;
+      }
+      
+      @keyframes pan-background {
+        0% { background-position: 0% 0%; }
+        100% { background-position: 480px 480px; }
+      }
+
+      .slide-in-right {
+        animation: slide-in-right 0.3s cubic-bezier(0.250, 0.460, 0.450, 0.940) both;
+      }
+
+      .backdrop-fade-in {
+        animation: fade-in 0.3s ease-out both;
+      }
+
+      @keyframes slide-in-right {
+        0% { transform: translateX(100%); opacity: 0; }
+        100% { transform: translateX(0); opacity: 1; }
+      }
+      @keyframes fade-in {
+        0% { opacity: 0; }
+        100% { opacity: 1; }
+      }
     </style>
   <script type="importmap">
 {
@@ -33,6 +64,7 @@
   }
 }
 </script>
+<link rel="stylesheet" href="/index.css">
 </head>
   <body>
     <app-root></app-root>

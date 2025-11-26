@@ -1,3 +1,4 @@
+
 import { Component, ChangeDetectionStrategy, ElementRef, viewChild, AfterViewInit, signal } from '@angular/core';
 import * as d3 from 'd3';
 
@@ -42,6 +43,7 @@ interface ArchLayer {
 })
 export class AppComponent implements AfterViewInit {
   private svgContainer = viewChild.required<ElementRef<SVGElement>>('svgContainer');
+  // FIX: Corrected typo from `viewchild` to `viewChild`.
   private tooltip = viewChild.required<ElementRef<HTMLDivElement>>('tooltip');
 
   selectedNode = signal<DiagramNode | null>(null);
@@ -196,7 +198,18 @@ export class AppComponent implements AfterViewInit {
       .attr('markerHeight', 8)
       .append('svg:path')
       .attr('d', 'M 0,-5 L 10 ,0 L 0,5')
-      .attr('fill', '#999');
+      .attr('fill', '#999')
+      .attr('class', 'arrowhead-path'); // Add class for styling
+
+    // Glow filter
+    const filter = defs.append("filter")
+      .attr("id", "glow");
+    filter.append("feGaussianBlur")
+      .attr("stdDeviation", "3.5")
+      .attr("result", "coloredBlur");
+    const feMerge = filter.append("feMerge");
+    feMerge.append("feMergeNode").attr("in", "coloredBlur");
+    feMerge.append("feMergeNode").attr("in", "SourceGraphic");
 
     // --- ARCHITECTURAL LAYERS ---
     const layers = svg.append('g').attr('class', 'layers');
@@ -232,7 +245,8 @@ export class AppComponent implements AfterViewInit {
       .data(this.links)
       .enter()
       .append('g')
-      .attr('class', 'link-container');
+      .attr('class', 'link-container')
+      .style('opacity', 0); // For fade-in animation
     
     links.append('path')
       .attr('d', d => this.getLinkPath(d))
@@ -253,7 +267,7 @@ export class AppComponent implements AfterViewInit {
                 .attr('font-size', '10px')
                 .attr('fill', '#cbd5e1')
                 .attr('paint-order', 'stroke')
-                .attr('stroke', '#1f2937')
+                .attr('stroke', '#111827') // Match background for halo effect
                 .attr('stroke-width', '3px');
             d.label.split('\n').forEach((line, index) => {
                 text.append('tspan')
@@ -270,7 +284,8 @@ export class AppComponent implements AfterViewInit {
       .data(this.nodes)
       .join('g')
       .attr('transform', d => `translate(${d.x},${d.y})`)
-      .style('cursor', 'pointer');
+      .style('cursor', 'pointer')
+      .style('opacity', 0); // For fade-in animation
 
     const nodeRadius = 35;
 
@@ -339,13 +354,26 @@ export class AppComponent implements AfterViewInit {
         }
     });
 
+    // --- LOAD ANIMATION ---
+    node.transition()
+      .duration(500)
+      .delay((d, i) => i * 10)
+      .style('opacity', 1);
+
+    links.transition()
+      .duration(500)
+      .delay((d, i) => this.nodes.length * 10 + i * 5)
+      .style('opacity', 1);
+
     // --- INTERACTIVITY ---
     const linkedByIndex = new Map<string, Set<string>>();
     this.links.forEach(l => {
-        if (!linkedByIndex.has(l.source)) linkedByIndex.set(l.source, new Set());
-        if (!linkedByIndex.has(l.target)) linkedByIndex.set(l.target, new Set());
-        linkedByIndex.get(l.source)?.add(l.target);
-        linkedByIndex.get(l.target)?.add(l.source);
+        const sourceId = (l.source as any).id || l.source;
+        const targetId = (l.target as any).id || l.target;
+        if (!linkedByIndex.has(sourceId)) linkedByIndex.set(sourceId, new Set());
+        if (!linkedByIndex.has(targetId)) linkedByIndex.set(targetId, new Set());
+        linkedByIndex.get(sourceId)?.add(targetId);
+        linkedByIndex.get(targetId)?.add(sourceId);
     });
 
     function isConnected(a: DiagramNode, b: DiagramNode): boolean {
@@ -360,15 +388,19 @@ export class AppComponent implements AfterViewInit {
 
     node.on('mouseover', (event, d) => {
         node.transition().duration(200).style('opacity', (o: any) => isConnected(d, o) ? 1.0 : 0.2);
+        
         links.transition().duration(200)
             .style('opacity', (l: any) => l.source.id === d.id || l.target.id === d.id ? 1.0 : 0.1)
             .each(function(l: any) {
                 if (l.source.id === d.id || l.target.id === d.id) {
+                    d3.select(this).style('filter', 'url(#glow)');
                     d3.select(this).select('path').attr('stroke', '#38bdf8');
                     d3.select(this).select('text').attr('fill', '#e0f2fe');
-                    d3.select(this).select('marker path').attr('fill', '#38bdf8');
+                    d3.select(this).select('.arrowhead-path').attr('fill', '#38bdf8');
                 }
             });
+
+        d3.select(event.currentTarget).style('filter', 'url(#glow)');
         
         const tooltipEl = this.tooltip().nativeElement;
         tooltipEl.innerHTML = `
@@ -388,16 +420,18 @@ export class AppComponent implements AfterViewInit {
         tooltipEl.style.top = `${y}px`;
     });
 
-    node.on('mouseout', () => {
+    node.on('mouseout', (event) => {
         node.transition().duration(200).style('opacity', 1);
         links.transition().duration(200)
             .style('opacity', 1)
             .each(function() {
+                d3.select(this).style('filter', null);
                 d3.select(this).select('path').attr('stroke', '#999');
                 d3.select(this).select('text').attr('fill', '#cbd5e1');
-                d3.select(this).select('marker path').attr('fill', '#999');
+                d3.select(this).select('.arrowhead-path').attr('fill', '#999');
             });
         
+        d3.select(event.currentTarget).style('filter', null);
         this.tooltip().nativeElement.classList.add('hidden');
     });
 
@@ -441,6 +475,7 @@ export class AppComponent implements AfterViewInit {
       const tempPath = document.createElementNS('http://www.w3.org/2000/svg', 'path');
       tempPath.setAttribute('d', pathData);
       const pathLength = tempPath.getTotalLength();
+      if (pathLength === 0) return '';
       let point = tempPath.getPointAtLength(pathLength); // End point
       const nodeRadius = 40;
       
