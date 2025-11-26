@@ -3,7 +3,6 @@
   <head>
     <meta charset="utf-8" />
     <title>Service Connection Visualizer</title>
-    <base href="/Teste/">
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <script src="https://cdn.tailwindcss.com"></script>
@@ -48,7 +47,7 @@
         100% { opacity: 1; }
       }
     </style>
-  <script type="importmap">
+<script type="importmap">
 {
   "imports": {
     "rxjs": "https://aistudiocdn.com/rxjs@^7.8.2?conditions=es2015",
@@ -57,16 +56,16 @@
     "rxjs/webSocket": "https://aistudiocdn.com/rxjs@^7.8.2/webSocket?conditions=es2015",
     "rxjs/testing": "https://aistudiocdn.com/rxjs@^7.8.2/testing?conditions=es2015",
     "rxjs/fetch": "https://aistudiocdn.com/rxjs@^7.8.2/fetch?conditions=es2015",
+    "@angular/compiler": "https://next.esm.sh/@angular/compiler@^21.0.1?external=rxjs",
     "d3": "https://next.esm.sh/d3@^7.9.0?external=rxjs",
-    "@angular/compiler": "https://next.esm.sh/@angular/compiler@^21.0.0?external=rxjs",
-    "@angular/platform-browser": "https://next.esm.sh/@angular/platform-browser@^21.0.0?external=rxjs",
-    "@angular/core": "https://next.esm.sh/@angular/core@^21.0.0?external=rxjs"
+    "@angular/platform-browser": "https://next.esm.sh/@angular/platform-browser@^21.0.1?external=rxjs",
+    "@angular/core": "https://next.esm.sh/@angular/core@^21.0.1?external=rxjs"
   }
 }
 </script>
+<link rel="stylesheet" href="/index.css">
 </head>
   <body>
     <app-root></app-root>
-    <script type="module" src="index.tsx"></script>
   </body>
 </html>
