@@ -1,0 +1,5 @@
+{
+  "name": "Diagrama de Arquitetura de Serviços",
+  "description": "Uma visualização estática e detalhada da arquitetura de microsserviços, baseada em um diagrama de sistema real. Passe o mouse sobre um serviço para destacar suas conexões.",
+  "requestFramePermissions": []
+}
