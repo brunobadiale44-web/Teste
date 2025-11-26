@@ -1,20 +1,21 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Diagrama de Arquitetura de Serviços Interativo
 
-# Run and deploy your AI Studio app
+Este repositório contém uma visualização interativa da arquitetura de microsserviços do sistema, construída com Angular e D3.js.
 
-This contains everything you need to run your app locally.
+[![Status do Deploy](https://github.com/brunobadiale44-web/Teste/actions/workflows/deploy.yml/badge.svg)](https://github.com/brunobadiale44-web/Teste/actions/workflows/deploy.yml)
 
-View your app in AI Studio: https://ai.studio/apps/drive/1Z5GuekOrfggn89nyOLLuUsqVexhXrV3D
+## Visualização Ao Vivo
 
-## Run Locally
+Clique na imagem abaixo para acessar a versão interativa completa do diagrama, hospedada com GitHub Pages.
 
-**Prerequisites:**  Node.js
+[![Pré-visualização do Diagrama de Arquitetura](https://raw.githubusercontent.com/project-assets/src/main/architecture-diagram-preview.png)](https://brunobadiale44-web.github.io/Teste/)
+*(**Nota:** A imagem acima é uma pré-visualização. Clique nela para ir para a aplicação interativa.)*
 
+---
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+## Desenvolvimento Local
+
+1.  Clone o repositório.
+2.  Instale as dependências: `npm install`
+3.  Rode o servidor de desenvolvimento: `npm start` (ou `ng serve`)
+4.  Abra `http://localhost:4200/` no seu navegador.
